@@ -42,6 +42,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         // Header 가 있는지 확인
         if (jwtHeader == null || !jwtHeader.startsWith(JwtProperties.HEADER)) {
+            System.out.println("header NULL: " + request.getRequestURI());
             chain.doFilter(request, response);
             return;
         }
