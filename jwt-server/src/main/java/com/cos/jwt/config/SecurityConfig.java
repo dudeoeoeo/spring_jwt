@@ -53,5 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .access("hasRole('ROLE_ADMIN')")
         .anyRequest()
         .permitAll();
+//        .and();
+//        .exceptionHandling().authenticationEntryPoint();
     }
 }
