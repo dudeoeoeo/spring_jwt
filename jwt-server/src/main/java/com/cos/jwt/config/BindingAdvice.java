@@ -1,5 +1,6 @@
 package com.cos.jwt.config;
 
+import com.cos.jwt.model.CommonDto;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,18 +34,19 @@ public class BindingAdvice {
         String [] type = joinPoint.getSignature().getDeclaringTypeName().split("\\.");
         String method = joinPoint.getSignature().getName();
 
-        Object [] args = Arrays.stream(joinPoint.getArgs()).map(arg -> arg).toArray();
+        Object [] parameters = Arrays.stream(joinPoint.getArgs()).map(arg -> !arg.toString().contains("error") ? arg : "").toArray();
 
-        logger.info("[{}][{}] Args: [{}]", type[type.length - 1], method, Arrays.toString(args));
+        logger.info("[{}][{}] Args: [{}]", type[type.length - 1], method, Arrays.toString(parameters));
 
-        for (Object arg : args) {
+        for (Object arg : joinPoint.getArgs()) {
             if (arg instanceof BindingResult && ((BindingResult) arg).hasErrors()) {
-                Map<Object, Object> errorMap = new HashMap<>();
-                ((BindingResult) arg).getFieldErrors().stream().map(fieldError -> {
-                    return errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
-                });
+                Map<String, Object> errorMap = new HashMap<>();
+                for (FieldError fieldError : ((BindingResult) arg).getFieldErrors()) {
+                    errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
 
-                return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
+                    logger.warn("[{}][{}] Field [{}] Message [{}]", type[type.length - 1], method, fieldError.getField(), fieldError.getDefaultMessage());
+                }
+                return new CommonDto<>(HttpStatus.BAD_REQUEST.value(), errorMap);
             }
         }
 
