@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -53,7 +54,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         System.out.println("JwtAuthorizationFilter: " + jwtToken + ", username: " + username);
         // 서명이 정상적으로 완료됨
         if (username != null) {
-            User user = userRepository.findByUsername(username);
+            User user = userRepository.findByUsername(username).orElseThrow(() ->
+                    new UsernameNotFoundException("유저를 찾지 못했습니다. " + username));
             System.out.println("user: " + user);
 
             PrincipalDetails principalDetails = new PrincipalDetails(user);
