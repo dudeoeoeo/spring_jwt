@@ -1,6 +1,8 @@
 package com.cos.jwt.model;
 
+import com.cos.jwt.dto.SignUpDto;
 import lombok.Data;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,5 +28,14 @@ public class User {
             return Arrays.asList(this.roles.split(","));
         }
         return new ArrayList<>();
+    }
+
+    public static User signUpUser(SignUpDto signUpDto, BCryptPasswordEncoder passwordEncoder) {
+        User newUser = new User();
+        newUser.setUsername(signUpDto.getUsername());
+        newUser.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        newUser.setRoles("ROLE_USER");
+
+        return newUser;
     }
 }
