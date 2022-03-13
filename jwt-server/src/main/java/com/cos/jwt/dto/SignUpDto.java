@@ -1,11 +1,15 @@
 package com.cos.jwt.dto;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+import javax.validation.constraints.NotNull;
+
+@Getter
 public class SignUpDto {
 
+    @NotNull
     private String username;
+    @NotNull
     private String password;
 
 }
