@@ -35,6 +35,15 @@ public class AuthController {
         return new CommonDto<>(HttpStatus.OK.value(), "회원가입에 성공했습니다.");
     }
 
+    @PostMapping("/signIn")
+    public CommonDto<?> signIn(@RequestBody SignInDto signInDto, BindingResult bindingResult) {
+        User savedUser = userRepository.findByUsername(signInDto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. " + signInDto.getUsername()));
+        if (!passwordEncoder.matches(signInDto.getPassword(), savedUser.getPassword())) {
+            throw new IllegalArgumentException("비밀번호를 확인해 주세요.");
+        }
+        return new CommonDto<>(HttpStatus.OK.value(), "로그인 되었습니다.");
+    }
 
     @GetMapping("/refresh-token")
     public CommonDto<?> refreshToken(HttpServletRequest request) {
