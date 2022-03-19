@@ -2,6 +2,7 @@ package com.cos.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.cos.jwt.config.jwt.JwtProperties;
@@ -14,6 +15,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class JWTControllerTest {
@@ -64,7 +67,7 @@ public class JWTControllerTest {
 
     @DisplayName("Jwt 토큰 발급")
     @Test
-    void JWT_토큰을_발급한다() {
+    void JWT_토큰을_발급한다() throws InterruptedException {
 
         Algorithm algorithm = Algorithm.HMAC512("test");
 
@@ -72,6 +75,7 @@ public class JWTControllerTest {
                 .withSubject("kay_token")
                 .withClaim("exp", Instant.now().getEpochSecond() + 3)
                 .withClaim("username", "user1")
+                .withArrayClaim("role", new String[]{"ROLE_ADMIN", "ROLE_USER"})
                 .sign(algorithm);
 
         System.out.println("토큰: " + accessToken);
@@ -81,5 +85,11 @@ public class JWTControllerTest {
         printClaim("typ", decoded.getHeaderClaim("typ"));
         printClaim("alg", decoded.getHeaderClaim("alg"));
         decoded.getClaims().forEach(JWTControllerTest::printClaim);
+
+        Thread.sleep(4000);
+
+        assertThrows(TokenExpiredException.class, () -> {
+            JWT.require(algorithm).build().verify(accessToken);
+        });
     }
 }
