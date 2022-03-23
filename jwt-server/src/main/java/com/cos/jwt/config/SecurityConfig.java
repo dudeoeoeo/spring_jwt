@@ -1,10 +1,13 @@
 package com.cos.jwt.config;
 
+import com.cos.jwt.config.jwt.JWTLoginFilter;
+import com.cos.jwt.config.jwt.JWTUtil;
 import com.cos.jwt.config.jwt.JwtAuthenticationFilter;
 import com.cos.jwt.config.jwt.JwtAuthorizationFilter;
 import com.cos.jwt.filter.MyFilter1;
 import com.cos.jwt.filter.MyFilter3;
 import com.cos.jwt.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +28,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserRepository userRepository;
 
+    private final ObjectMapper objectMapper;
+
+    private JWTUtil jwtUtil = new JWTUtil();
+
     @Bean
     public BCryptPasswordEncoder encodePwd() {
         return new BCryptPasswordEncoder();
@@ -42,7 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Authorization: Token 사용
         // Basic 은 ID, PW 사용 / Bearer Token 사용
         .httpBasic().disable()
-        .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager
+//        .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager
+        .addFilter(new JWTLoginFilter(jwtUtil, objectMapper, authenticationManager()))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
         .authorizeRequests()
         .antMatchers("/api/v1/user/**")
