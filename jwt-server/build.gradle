@@ -34,6 +34,15 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/com.auth0/java-jwt
 	implementation group: 'com.auth0', name: 'java-jwt', version: '3.18.2'
+
+	// Querydsl
+	implementation 'com.querydsl:querydsl-jpa'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	// https://mvnrepository.com/artifact/org.apache.derby/derby
+	testImplementation group: 'org.apache.derby', name: 'derby', version: '10.14.2.0'
+	// https://mvnrepository.com/artifact/com.querydsl/querydsl-sql
+	implementation group: 'com.querydsl', name: 'querydsl-sql', version: '4.4.0'
 }
 
 tasks.named('test') {
