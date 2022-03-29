@@ -23,6 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ProductTest {
@@ -71,9 +74,9 @@ public class ProductTest {
             option.setStock(stocks[i]);
 //            option.setProduct(productList.get(i));
             optionRepository.save(option);
-            productList.get(i).setOptions(Collections.singletonList(option));
+//            productList.get(i).setOptions(Collections.singletonList(option));
         }
-        productRepository.saveAll(productList);
+//        productRepository.saveAll(productList);
     }
     @AfterEach
     void 테스트가_끝난_후() {
@@ -88,14 +91,42 @@ public class ProductTest {
      * TODO: JPA 의 영속성 컨텍스트는 보통 트랜잭션과 생명주기가 같기 때문에
      *       영속성 상태가 끝났을 때 Entity 의 필요한 값이 있을 때 쿼리를 날려
      *       Proxy 객체를 채우지 않는다.
+     *
+     * CLEAR: 현재 Product 는 Option 을 필수 값이 아닌 선택 값으로
+     *        가지고 있으므로 Product Entity 에 Option 을 반드시
+     *        가지고 있을 필요가 없다.
      */
     @Test
     void 상품이_테이블에_등록되었는지_확인() {
         System.out.println("상품 테스트");
-//        List<Option> options = optionRepository.findAll();
+        List<Option> options = optionRepository.findAll();
         List<Product> products = productRepository.findAll();
         products.forEach(System.out::println);
-//        options.forEach(System.out::println);
+        options.forEach(System.out::println);
+    }
+    @Test
+    void 상품_등록_테스트() {
+        Product product = new Product();
+        product.setName("안마의자");
+        product.setDescription("앉으면 잠이 오는 안마의자");
+        product.setPrice(2380000);
 
+        Product savedProduct = productRepository.save(product);
+
+        Option option = new Option();
+        option.setId(Long.valueOf(16));
+        option.setProduct(savedProduct);
+        option.setColor("white");
+        option.setStock(1);
+        option.setExtraPrice(70000);
+
+        optionRepository.save(option);
+        option = optionRepository.findById(Long.valueOf(16)).orElseGet(null);
+        System.out.println(option.toString());
+
+        assertEquals(Long.valueOf(15), option.getProduct().getId());
+        assertEquals("안마의자", option.getProduct().getName());
+        assertEquals("앉으면 잠이 오는 안마의자", option.getProduct().getDescription());
+        assertEquals(2380000, option.getProduct().getPrice());
     }
 }
