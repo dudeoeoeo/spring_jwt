@@ -129,4 +129,25 @@ public class ProductTest {
         assertEquals("앉으면 잠이 오는 안마의자", option.getProduct().getDescription());
         assertEquals(2380000, option.getProduct().getPrice());
     }
+
+    @Test
+    void 상품_수정_테스트() {
+        Product product = new Product();
+        product.setName("안마의자");
+        product.setDescription("앉으면 잠이 오는 안마의자");
+        product.setPrice(2380000);
+
+        Product savedProduct = productRepository.save(product);
+
+        String newDescription = "새로운 아이템";
+        int newPrice = 1900000;
+
+        savedProduct.setDescription(newDescription);
+        savedProduct.setPrice(newPrice);
+
+        Product updatedProduct = productRepository.save(savedProduct);
+
+        assertEquals(newDescription, updatedProduct.getDescription());
+        assertEquals(newPrice, updatedProduct.getPrice());
+    }
 }

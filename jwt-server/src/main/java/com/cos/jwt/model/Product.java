@@ -27,7 +27,18 @@ public class Product {
     @Column(name = "price")
     private int price;
 
-    @OneToMany(mappedBy = "product")
-    private List<Option> options = new ArrayList<>();
+//    @OneToMany(mappedBy = "product")
+//    private List<Option> options = new ArrayList<>();
 
+//    @Override
+//    public String toString() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("id: " + this.id);
+//        sb.append("name: " + this.name);
+//        sb.append("description: " + this.description);
+//        sb.append("price: " + this.price);
+//        if (this.options.size() > 0)
+//            sb.append("options: " + this.options.toString());
+//        return String.valueOf(sb);
+//    }
 }
