@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -149,5 +150,38 @@ public class ProductTest {
 
         assertEquals(newDescription, updatedProduct.getDescription());
         assertEquals(newPrice, updatedProduct.getPrice());
+    }
+
+    @Test
+    void 상품_등록후_옵션추가() {
+        Product product = new Product();
+        product.setName("안마의자");
+        product.setDescription("앉으면 잠이 오는 안마의자");
+        product.setPrice(2380000);
+
+        Product savedProduct = productRepository.save(product);
+
+        Option option1 = new Option();
+        option1.setId(Long.valueOf(16));
+        option1.setProduct(savedProduct);
+        option1.setColor("black");
+        option1.setStock(100);
+        option1.setExtraPrice(150000);
+
+        Option option2 = new Option();
+        option2.setId(Long.valueOf(17));
+        option2.setProduct(savedProduct);
+        option2.setColor("pink");
+        option2.setStock(30);
+        option2.setExtraPrice(2000000);
+
+        optionRepository.saveAll(Arrays.asList(option1, option2));
+
+        List<Option> optionList = optionRepository.findAllByProduct(savedProduct);
+
+        assertEquals(2380000, optionList.get(0).getProduct().getPrice());
+        assertEquals(2, optionList.size());
+        assertEquals(4380000, optionList.get(1).getProduct().getPrice() + optionList.get(1).getExtraPrice());
+        assertEquals(2530000, optionList.get(0).getProduct().getPrice() + optionList.get(0).getExtraPrice());
     }
 }
