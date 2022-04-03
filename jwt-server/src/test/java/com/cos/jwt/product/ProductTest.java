@@ -1,28 +1,27 @@
 package com.cos.jwt.product;
 
+import com.cos.jwt.dto.ProductInfoDto;
 import com.cos.jwt.model.Option;
 import com.cos.jwt.model.Product;
 import com.cos.jwt.repository.OptionRepository;
 import com.cos.jwt.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.aspectj.lang.annotation.After;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,7 +72,7 @@ public class ProductTest {
             option.setColor(colors[i]);
             option.setExtraPrice(extraPrices[i]);
             option.setStock(stocks[i]);
-//            option.setProduct(productList.get(i));
+            option.setProduct(productList.get(i));
             optionRepository.save(option);
 //            productList.get(i).setOptions(Collections.singletonList(option));
         }
@@ -105,6 +104,7 @@ public class ProductTest {
         products.forEach(System.out::println);
         options.forEach(System.out::println);
     }
+
     @Test
     void 상품_등록_테스트() {
         Product product = new Product();
@@ -183,5 +183,12 @@ public class ProductTest {
         assertEquals(2, optionList.size());
         assertEquals(4380000, optionList.get(1).getProduct().getPrice() + optionList.get(1).getExtraPrice());
         assertEquals(2530000, optionList.get(0).getProduct().getPrice() + optionList.get(0).getExtraPrice());
+    }
+
+    @Test
+    void 상품_정보_가져오기() {
+        PageRequest request = PageRequest.of(1, 5);
+        Page<ProductInfoDto> productInfoDtos = productRepository.productInfo(request);
+        productInfoDtos.get().forEach(System.out::println);
     }
 }
