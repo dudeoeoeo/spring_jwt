@@ -1,5 +1,6 @@
 package com.cos.jwt.dao;
 
+import com.cos.jwt.dto.ProductDetailDto;
 import com.cos.jwt.dto.ProductInfoDto;
 import com.cos.jwt.model.QOption;
 import com.cos.jwt.model.QProduct;
@@ -47,5 +48,21 @@ public class ProductDAOImpl implements ProductDAO {
                 .where(product.id.gt(1));
 
         return PageableExecutionUtils.getPage(contents, pageable, countQuery::fetchCount);
+    }
+
+    @Override
+    public List<ProductDetailDto > productDetail(Long productId) {
+        List<ProductDetailDto> productDetail = queryFactory
+                .select(Projections.bean(ProductDetailDto.class,
+                        product.id,
+                        product.name,
+                        product.description,
+                        product.price,
+                        option))
+                .from(product, option)
+                .where(product.id.eq(productId), option.product.id.eq(productId))
+                .fetch();
+
+        return productDetail;
     }
 }
