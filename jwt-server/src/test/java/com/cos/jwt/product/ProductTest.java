@@ -1,5 +1,6 @@
 package com.cos.jwt.product;
 
+import com.cos.jwt.dto.ProductDetailDto;
 import com.cos.jwt.dto.ProductInfoDto;
 import com.cos.jwt.model.Option;
 import com.cos.jwt.model.Product;
@@ -72,7 +73,7 @@ public class ProductTest {
             option.setColor(colors[i]);
             option.setExtraPrice(extraPrices[i]);
             option.setStock(stocks[i]);
-            option.setProduct(productList.get(i));
+            option.setProduct(productList.get(1));
             optionRepository.save(option);
 //            productList.get(i).setOptions(Collections.singletonList(option));
         }
@@ -190,5 +191,14 @@ public class ProductTest {
         PageRequest request = PageRequest.of(1, 5);
         Page<ProductInfoDto> productInfoDtos = productRepository.productInfo(request);
         productInfoDtos.get().forEach(System.out::println);
+    }
+
+    @Test
+    void 상품디테일정보() {
+        List<ProductDetailDto> productDetailList = productRepository.productDetail(Long.valueOf(2));
+
+        productDetailList.forEach(System.out::println);
+
+        assertEquals(5, productDetailList.size());
     }
 }
