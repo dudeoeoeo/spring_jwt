@@ -27,6 +27,10 @@ public class Product {
     @Column(name = "price")
     private int price;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
 //    @OneToMany(mappedBy = "product")
 //    private List<Option> options = new ArrayList<>();
 
