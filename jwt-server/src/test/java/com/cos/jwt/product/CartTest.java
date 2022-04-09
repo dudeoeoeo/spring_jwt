@@ -17,9 +17,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +50,9 @@ public class CartTest {
 
     @Autowired
     private OptionRepository optionRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private ProductHelper productHelper = new ProductHelper();
 
@@ -87,4 +93,39 @@ public class CartTest {
         System.out.println(savedCart.toString());
         assertEquals(3, savedCart.getProductList().size());
     }
+
+    /**
+     * 영속 상태를 유지하면서 테스트 진행을 위해 @Transactional 을 붙여준다
+     * 현재 Cart entity 에 Product 가 존재하고 Product entity 에도 Cart 가 존재한다.
+     * 하지만 Product entity 에 굳이 Cart 가 존재할 필요가 있을까
+     * TODO: 장바구니는 유저와 1:1 매칭을 하고 장바구니에는 여러가지 상품을 담을 수 있고
+     *       상품은 장바구니의 정보를 가지고 있을 이유가 없다
+     */
+    @Test
+    @Transactional
+    void 상품_추가_삭제_테스트() {
+        Cart cart = new Cart();
+
+        List<Product> products = productRepository.findAll();
+        cart.setProductList(new ArrayList<>(Arrays.asList(products.get(0), products.get(1), products.get(2))));
+
+        Cart savedCart = cartRepository.save(cart);
+        Long cartId = savedCart.getId();
+        Product newProduct = products.get(4);
+
+        savedCart.getProductList().add(newProduct);
+
+        Cart newSavedCart = cartRepository.save(savedCart);
+//        Optional<Cart> newSavedCart = cartRepository.findById(cartId);
+
+        System.out.println(newSavedCart.toString());
+        assertEquals(4, newSavedCart.getProductList().size());
+
+        newSavedCart.getProductList().remove(newSavedCart.getProductList().size() - 1);
+
+        newSavedCart = cartRepository.save(newSavedCart);
+
+        assertEquals(3, newSavedCart.getProductList().size());
+    }
+
 }
