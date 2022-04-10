@@ -20,7 +20,7 @@ public class Cart {
     @Column(name = "cart_id")
     private Long id;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", orphanRemoval = true, cascade = CascadeType.ALL)
     @Column(name = "product_id")
     private List<Product> productList = new ArrayList<>();
 }
