@@ -12,10 +12,13 @@ import java.util.List;
 
 public class ProductHelper {
 
+    List<Product> productList = new ArrayList<>();
+    List<Option> optionList = new ArrayList<>();
+
     List<Product> 상품생성() {
         String [] names = new String[]{"맨투맨", "후드티", "셔츠", "데님바지", "수면양말", "흰티", "검은티", "멜빵", "조끼"};
         int [] prices = new int[]{10000, 15000, 20000, 22000, 3000, 5000, 8000, 12000, 9500};
-        List<Product> productList = new ArrayList<>();
+
         for(int i = 1; i < 10; i++) {
             Product product = new Product();
             product.setName(names[i-1]);
@@ -28,7 +31,6 @@ public class ProductHelper {
     }
 
     List<Option> 상품옵션생성() {
-        List<Option> optionList = new ArrayList<>();
 
         String [] sizes = new String[]{"S", "M", "L", "XL", "XXL"};
         String [] colors = new String[]{"white", "black", "yellow", "purple", "blue"};
@@ -40,6 +42,7 @@ public class ProductHelper {
             option.setColor(colors[i]);
             option.setExtraPrice(extraPrices[i]);
             option.setStock(stocks[i]);
+            option.setProduct(productList.get(i));
             optionList.add(option);
         }
         return optionList;

@@ -24,10 +24,11 @@ public class CartDAOImpl implements CartDAO{
         List<CartInfoDto> contents = queryFactory
                 .select(Projections.bean(CartInfoDto.class,
                         cart,
-                        product))
-                .from(cart, product)
-//                .join(product.cart, cart)
-//                .join(option.product, product)
+                        product,
+                        option))
+                .from(cart, product, option)
+                .join(option.product, product)
+                .distinct()
                 .where(cart.id.eq(cartId))
                 .fetch();
 

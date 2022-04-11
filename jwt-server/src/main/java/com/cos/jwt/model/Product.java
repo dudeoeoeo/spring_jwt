@@ -27,12 +27,12 @@ public class Product {
     @Column(name = "price")
     private int price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-//    @OneToMany(mappedBy = "product")
-//    private List<Option> options = new ArrayList<>();
+    @OneToMany(mappedBy = "product")
+    private List<Option> options = new ArrayList<>();
 
 //    @Override
 //    public String toString() {

@@ -97,6 +97,7 @@ public class ProductTest {
      *        가지고 있으므로 Product Entity 에 Option 을 반드시
      *        가지고 있을 필요가 없다.
      */
+    @Transactional
     @Test
     void 상품이_테이블에_등록되었는지_확인() {
         System.out.println("상품 테스트");
@@ -106,6 +107,7 @@ public class ProductTest {
         options.forEach(System.out::println);
     }
 
+    @Transactional
     @Test
     void 상품_등록_테스트() {
         Product product = new Product();
@@ -122,16 +124,17 @@ public class ProductTest {
         option.setStock(1);
         option.setExtraPrice(70000);
 
-        optionRepository.save(option);
-        option = optionRepository.findById(Long.valueOf(16)).orElseGet(null);
+        option = optionRepository.save(option);
+//        option = optionRepository.findById(Long.valueOf(16));
         System.out.println(option.toString());
 
-        assertEquals(Long.valueOf(15), option.getProduct().getId());
+//        assertEquals(Long.valueOf(15), option.getProduct().getId());
         assertEquals("안마의자", option.getProduct().getName());
         assertEquals("앉으면 잠이 오는 안마의자", option.getProduct().getDescription());
         assertEquals(2380000, option.getProduct().getPrice());
     }
 
+    @Transactional
     @Test
     void 상품_수정_테스트() {
         Product product = new Product();
@@ -153,6 +156,7 @@ public class ProductTest {
         assertEquals(newPrice, updatedProduct.getPrice());
     }
 
+    @Transactional
     @Test
     void 상품_등록후_옵션추가() {
         Product product = new Product();
@@ -186,6 +190,7 @@ public class ProductTest {
         assertEquals(2530000, optionList.get(0).getProduct().getPrice() + optionList.get(0).getExtraPrice());
     }
 
+    @Transactional
     @Test
     void 상품_정보_가져오기() {
         PageRequest request = PageRequest.of(1, 5);
@@ -193,6 +198,7 @@ public class ProductTest {
         productInfoDtos.get().forEach(System.out::println);
     }
 
+    @Transactional
     @Test
     void 상품디테일정보() {
         List<ProductDetailDto> productDetailList = productRepository.productDetail(Long.valueOf(2));
