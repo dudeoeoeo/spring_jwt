@@ -31,7 +31,7 @@ public class Product {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Option> options = new ArrayList<>();
 
 //    @Override
