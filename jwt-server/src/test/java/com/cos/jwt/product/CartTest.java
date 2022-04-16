@@ -8,6 +8,7 @@ import com.cos.jwt.repository.CartRepository;
 import com.cos.jwt.repository.OptionRepository;
 import com.cos.jwt.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,11 +60,109 @@ public class CartTest {
 
 //    @BeforeEach
     void 기본_상품_옵션_생성() {
-        List<Product> productList = productHelper.상품생성();
+//        List<Product> productList = productHelper.상품생성();
+//        productRepository.saveAll(productList);
+//
+//        List<Option> optionList = productHelper.상품옵션생성();
+//        optionRepository.saveAll(optionList);
+        List<Product> productList = new ArrayList<>();
+        List<Option> optionList = new ArrayList<>();
+        String [] names = new String[]{"맨투맨", "후드티", "셔츠", "데님바지", "수면양말", "흰티", "검은티", "멜빵", "조끼"};
+        int [] prices = new int[]{10000, 15000, 20000, 22000, 3000, 5000, 8000, 12000, 9500};
+
+        for(int i = 1; i < 10; i++) {
+            Product product = new Product();
+            product.setName(names[i-1]);
+            product.setPrice(prices[i-1]);
+            product.setDescription("상품설명"+i);
+
+            productList.add(product);
+        }
+        String [] sizes = new String[]{"S", "M", "L", "XL", "XXL"};
+        String [] colors = new String[]{"white", "black", "yellow", "purple", "blue"};
+        int [] extraPrices = new int[]{3000, 2000, 5000, 8000, 6000};
+        int [] stocks = new int[]{90, 80, 42, 66, 81};
+        for (int i = 0; i < 5; i++) {
+            Option option = new Option();
+            option.setSize(sizes[i]);
+            option.setColor(colors[i]);
+            option.setExtraPrice(extraPrices[i]);
+            option.setStock(stocks[i]);
+//            option.setProduct(productList.get(i));
+            optionList.add(option);
+            productList.get(i).getOptions().add(option);
+        }
+        optionRepository.saveAll(optionList);
+        productRepository.saveAll(productList);
+    }
+
+    @Test
+    @Transactional
+    void 카트테스트() {
+        기본_상품_옵션_생성();
+        List<Product> products = productRepository.findAll();
+
+        Cart cart = new Cart();
+
+        cart.setProductList(new ArrayList<>(Arrays.asList(products.get(0), products.get(1), products.get(2), products.get(4))));
+
+        Cart savedCart = cartRepository.save(cart);
+
+        final Optional<Cart> findCart = cartRepository.findById(savedCart.getId());
+
+        Gson gson = new Gson();
+        final String json = gson.toJson(findCart.get());
+        System.out.println("=============================== CartInfoDto ================================");
+        System.out.println(json);
+        System.out.println("=============================== CartInfoDto ================================");
+    }
+
+    @Test
+    @Transactional
+    void 테스트() {
+        List<Product> productList = new ArrayList<>();
+        List<Option> optionList = new ArrayList<>();
+        String [] names = new String[]{"맨투맨", "후드티", "셔츠", "데님바지", "수면양말", "흰티", "검은티", "멜빵", "조끼"};
+        int [] prices = new int[]{10000, 15000, 20000, 22000, 3000, 5000, 8000, 12000, 9500};
+
+        for(int i = 1; i < 10; i++) {
+            Product product = new Product();
+            product.setName(names[i-1]);
+            product.setPrice(prices[i-1]);
+            product.setDescription("상품설명"+i);
+
+            productList.add(product);
+            Cart cart = new Cart();
+
+            cart.setProductList(new ArrayList<>(Arrays.asList(productList.get(0), productList.get(1), productList.get(2), productList.get(4))));
+
+            Cart savedCart = cartRepository.save(cart);
+            cartRepository.getCartItem(savedCart.getId());
+        }
+        String [] sizes = new String[]{"S", "M", "L", "XL", "XXL"};
+        String [] colors = new String[]{"white", "black", "yellow", "purple", "blue"};
+        int [] extraPrices = new int[]{3000, 2000, 5000, 8000, 6000};
+        int [] stocks = new int[]{90, 80, 42, 66, 81};
+        for (int i = 0; i < 5; i++) {
+            Option option = new Option();
+            option.setSize(sizes[i]);
+            option.setColor(colors[i]);
+            option.setExtraPrice(extraPrices[i]);
+            option.setStock(stocks[i]);
+//            option.setProduct(productList.get(i));
+            optionList.add(option);
+            productList.get(i).getOptions().add(option);
+        }
+        optionRepository.saveAll(optionList);
         productRepository.saveAll(productList);
 
-        List<Option> optionList = productHelper.상품옵션생성();
-        optionRepository.saveAll(optionList);
+        List<Product> products = productRepository.findAll();
+        Cart cart = new Cart();
+
+        cart.setProductList(new ArrayList<>(Arrays.asList(products.get(0), products.get(1), products.get(2), products.get(4))));
+
+        Cart savedCart = cartRepository.save(cart);
+        cartRepository.getCartItem(savedCart.getId());
     }
     @Test
     void 상품헬퍼테스트() {
@@ -145,11 +244,30 @@ public class CartTest {
         Cart savedCart = cartRepository.save(cart);
         Optional<Cart> sCart = cartRepository.findById(savedCart.getId());
 
-        List<CartInfoDto> cartItem = cartRepository.getCartItem(sCart.get().getId());
-        System.out.println("\n\n\n cartItem \n\n\n" + cartItem.toString());
+//        List<CartInfoDto> cartItem = cartRepository.getCartItem(sCart.get().getId());
+//        System.out.println("\n\n\n cartItem \n\n\n" + cartItem.toString());
+//
+//        Optional<Cart> c1 = cartRepository.findById(sCart.get().getId());
+//        System.out.println("\n\n\n\n c1 \n\n\n" + c1.get().toString());
+    }
+    @Test
+    @Transactional
+    void 카트_인포_테스트() {
+        List<Product> products = productHelper.상품생성();
+        List<Option> optionList = productHelper.상품옵션생성();
+        optionRepository.saveAll(optionList);
+        productRepository.saveAll(products);
 
-        Optional<Cart> c1 = cartRepository.findById(sCart.get().getId());
-        System.out.println("\n\n\n\n c1 \n\n\n" + c1.get().toString());
+
+//        List<Product> products = productRepository.findAll();
+//        Cart cart = new Cart();
+//
+//        cart.setProductList(new ArrayList<>(Arrays.asList(products.get(0), products.get(1), products.get(2), products.get(4))));
+//
+//        Cart savedCart = cartRepository.save(cart);
+//        cartRepository.getCartItem(savedCart.getId());
+
+//        Optional<Cart> sCart = cartRepository.findById(savedCart.getId());
     }
 
     /**
@@ -179,7 +297,7 @@ public class CartTest {
             option.setColor(colors[i]);
             option.setExtraPrice(extraPrices[i]);
             option.setStock(stocks[i]);
-            option.setProduct(productList.get(i));
+//            option.setProduct(productList.get(i));
             optionList.add(option);
             productList.get(i).getOptions().add(option);
         }
@@ -190,10 +308,10 @@ public class CartTest {
         Cart savedCart = cartRepository.save(cart);
 
 //        System.out.println("\n\n\n savedCart \n\n\n ===========>    " + savedCart.getProductList().get(0).getOptions().toString() );
-        List<CartInfoDto> cartItem = cartRepository.getCartItem(savedCart.getId());
+//        List<CartInfoDto> cartItem = cartRepository.getCartItem(savedCart.getId());
 //        System.out.println("\n\n\n cartItem \n\n\n" + cartItem.toString());
-        System.out.println("\n\n=======================================================");
-        cartItem.forEach(System.out::println);
-        System.out.println("\n\n=======================================================");
+//        System.out.println("\n\n=======================================================");
+//        cartItem.forEach(System.out::println);
+//        System.out.println("\n\n=======================================================");
     }
 }

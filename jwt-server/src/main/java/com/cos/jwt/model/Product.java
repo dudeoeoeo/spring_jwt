@@ -27,11 +27,11 @@ public class Product {
     @Column(name = "price")
     private int price;
 
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+//    @ManyToOne
+//    @JoinColumn(name = "cart_id")
+//    private Cart cart;
 
-    @OneToMany(mappedBy = "product", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany //(mappedBy = "product")
     private List<Option> options = new ArrayList<>();
 
 //    @Override
