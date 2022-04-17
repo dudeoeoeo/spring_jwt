@@ -7,6 +7,7 @@ import com.cos.jwt.model.Product;
 import com.cos.jwt.repository.OptionRepository;
 import com.cos.jwt.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +48,7 @@ public class ProductTest {
     private OptionRepository optionRepository;
 
     @Transactional
-    @BeforeEach
+//    @BeforeEach
     void 기본상품등록() {
         String [] names = new String[]{"맨투맨", "후드티", "셔츠", "데님바지", "수면양말", "흰티", "검은티", "멜빵", "조끼"};
         int [] prices = new int[]{10000, 15000, 20000, 22000, 3000, 5000, 8000, 12000, 9500};
@@ -73,13 +72,13 @@ public class ProductTest {
             option.setColor(colors[i]);
             option.setExtraPrice(extraPrices[i]);
             option.setStock(stocks[i]);
-            option.setProduct(productList.get(1));
+//            option.setProduct(productList.get(1));
             optionRepository.save(option);
 //            productList.get(i).setOptions(Collections.singletonList(option));
         }
 //        productRepository.saveAll(productList);
     }
-    @AfterEach
+//    @AfterEach
     void 테스트가_끝난_후() {
 //        productRepository.deleteAll();
 //        optionRepository.deleteAll();
@@ -119,7 +118,7 @@ public class ProductTest {
 
         Option option = new Option();
         option.setId(Long.valueOf(16));
-        option.setProduct(savedProduct);
+//        option.setProduct(savedProduct);
         option.setColor("white");
         option.setStock(1);
         option.setExtraPrice(70000);
@@ -129,9 +128,9 @@ public class ProductTest {
         System.out.println(option.toString());
 
 //        assertEquals(Long.valueOf(15), option.getProduct().getId());
-        assertEquals("안마의자", option.getProduct().getName());
-        assertEquals("앉으면 잠이 오는 안마의자", option.getProduct().getDescription());
-        assertEquals(2380000, option.getProduct().getPrice());
+//        assertEquals("안마의자", option.getProduct().getName());
+//        assertEquals("앉으면 잠이 오는 안마의자", option.getProduct().getDescription());
+//        assertEquals(2380000, option.getProduct().getPrice());
     }
 
     @Transactional
@@ -168,26 +167,26 @@ public class ProductTest {
 
         Option option1 = new Option();
         option1.setId(Long.valueOf(16));
-        option1.setProduct(savedProduct);
+//        option1.setProduct(savedProduct);
         option1.setColor("black");
         option1.setStock(100);
         option1.setExtraPrice(150000);
 
         Option option2 = new Option();
         option2.setId(Long.valueOf(17));
-        option2.setProduct(savedProduct);
+//        option2.setProduct(savedProduct);
         option2.setColor("pink");
         option2.setStock(30);
         option2.setExtraPrice(2000000);
 
         optionRepository.saveAll(Arrays.asList(option1, option2));
 
-        List<Option> optionList = optionRepository.findAllByProduct(savedProduct);
+//        List<Option> optionList = optionRepository.findAllByProduct(savedProduct);
 
-        assertEquals(2380000, optionList.get(0).getProduct().getPrice());
-        assertEquals(2, optionList.size());
-        assertEquals(4380000, optionList.get(1).getProduct().getPrice() + optionList.get(1).getExtraPrice());
-        assertEquals(2530000, optionList.get(0).getProduct().getPrice() + optionList.get(0).getExtraPrice());
+//        assertEquals(2380000, optionList.get(0).getProduct().getPrice());
+//        assertEquals(2, optionList.size());
+//        assertEquals(4380000, optionList.get(1).getProduct().getPrice() + optionList.get(1).getExtraPrice());
+//        assertEquals(2530000, optionList.get(0).getProduct().getPrice() + optionList.get(0).getExtraPrice());
     }
 
     @Transactional
@@ -206,5 +205,66 @@ public class ProductTest {
         productDetailList.forEach(System.out::println);
 
         assertEquals(5, productDetailList.size());
+    }
+
+
+    /**
+     *     create table option (
+     *        option_id bigint not null,
+     *         color varchar(255),
+     *         extra_price integer,
+     *         size varchar(255),
+     *         stock integer,
+     *         primary key (option_id)
+     *     )
+     *     create table product (
+     *        product_id bigint not null,
+     *         description varchar(255),
+     *         name varchar(255),
+     *         price integer,
+     *         primary key (product_id)
+     *     )
+     *
+     *     create table product_options (
+     *        Product_product_id bigint not null,
+     *         options_option_id bigint not null
+     *     )
+     * 단방향 @OneToMany 로 인해 Product 와 Option 의 관계를
+     * 추적하기 위해 product_options 테이블을 만들었다
+     */
+    @Test
+    @Transactional
+    void 단뱡향_테스트() {
+        Product product = new Product();
+        product.setName("상품");
+        product.setDescription("정보");
+        product.setPrice(11111);
+
+        Option option = new Option();
+        option.setStock(15);
+        option.setColor("black");
+        option.setSize("XL");
+        option.setExtraPrice(15000);
+
+        optionRepository.save(option);
+        product.setOptions(Collections.singletonList(option));
+
+        System.out.println("=========================================================================================");
+        final Product savedProduct = productRepository.save(product);
+        System.out.println("=========================================================================================");
+
+        Gson gson = new Gson();
+        final String json = gson.toJson(savedProduct);
+
+        System.out.println("=========================================================================================");
+        System.out.println(json);
+        System.out.println("=========================================================================================");
+
+        final Optional<Option> savedOption = optionRepository.findById(savedProduct.getOptions().get(0).getId());
+        final String toJson = gson.toJson(savedOption.get());
+
+        System.out.println("=========================================================================================");
+        System.out.println(toJson);
+        System.out.println("=========================================================================================");
     }
 }

@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@ToString(exclude = "product")
+//@ToString(exclude = "product")
 @Table(name = "option")
 public class Option {
 
@@ -18,10 +18,10 @@ public class Option {
     @Column(name = "option_id")
     private Long id;
 
-    @ManyToOne //(fetch = FetchType.EAGER)
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+//    @ManyToOne //(fetch = FetchType.EAGER)
+////    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "product_id")
+//    private Product product;
 
     @Column(name = "size")
     private String size;

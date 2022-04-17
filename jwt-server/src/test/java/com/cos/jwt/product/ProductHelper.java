@@ -42,8 +42,9 @@ public class ProductHelper {
             option.setColor(colors[i]);
             option.setExtraPrice(extraPrices[i]);
             option.setStock(stocks[i]);
-            option.setProduct(productList.get(i));
+//            option.setProduct(productList.get(i));
             optionList.add(option);
+            productList.get(i).getOptions().add(option);
         }
         return optionList;
     }

@@ -28,7 +28,8 @@ public class Cart {
      *  Product 가 관계의 주인인 이유는 Cart 테이블의 Product_id 는 여러개일 수 있기 때문에
      *  특정 관계를 찾기 어렵다.
      */
-    @OneToMany(mappedBy = "cart", orphanRemoval = true, cascade = CascadeType.ALL)
-    @Column(name = "product_id")
+//    @OneToMany(mappedBy = "cart", orphanRemoval = true, cascade = CascadeType.ALL)
+//    @Column(name = "product_id")
+    @OneToMany
     private List<Product> productList = new ArrayList<>();
 }

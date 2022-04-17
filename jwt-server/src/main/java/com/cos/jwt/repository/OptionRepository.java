@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface OptionRepository extends JpaRepository<Option, Long> {
 
-    List<Option> findAllByProduct(Product product);
+//    List<Option> findAllByProduct(Product product);
 }
