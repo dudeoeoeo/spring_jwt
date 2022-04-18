@@ -1,5 +1,5 @@
 package com.cos.jwt.constant;
 
 public enum OrderStatus {
-    ORDERED, CANCEL
+    ORDERED, RETURN, CHANGE, REFUND, CANCEL
 }

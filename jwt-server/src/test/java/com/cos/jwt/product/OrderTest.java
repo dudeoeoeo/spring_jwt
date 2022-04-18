@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,5 +85,47 @@ public class OrderTest {
 
         assertEquals(products.get(0).getId(), saveOrder.getProducts().get(0).getId());
         assertEquals(products.get(0).getPrice(), saveOrder.getProducts().get(0).getPrice());
+        assertEquals(OrderStatus.ORDERED, saveOrder.getStatus());
+    }
+
+    @Test
+    @Transactional
+    void 취소_테스트() {
+        final List<Product> products = productRepository.findAll();
+
+        Order order = new Order();
+
+        order.setProducts(Collections.singletonList(products.get(1)));
+        order.setStatus(OrderStatus.ORDERED);
+
+        final Order saveOrder = orderRepository.save(order);
+
+        final Optional<Order> ordered = orderRepository.findById(saveOrder.getId());
+
+        if (ordered.isPresent()) {
+            ordered.get().setStatus(OrderStatus.CANCEL);
+        }
+
+        assertEquals(OrderStatus.CANCEL, ordered.get().getStatus());
+    }
+
+    @Test
+    @Transactional
+    void 교환_테스트() {
+        final List<Product> products = productRepository.findAll();
+
+        Order order = new Order();
+
+        order.setProducts(Collections.singletonList(products.get(1)));
+        order.setStatus(OrderStatus.ORDERED);
+
+        final Order saveOrder = orderRepository.save(order);
+
+        final Optional<Order> ordered = orderRepository.findById(saveOrder.getId());
+
+        if (ordered.isPresent()) {
+            ordered.get().setStatus(OrderStatus.CHANGE);
+        }
+        assertEquals(OrderStatus.CHANGE, ordered.get().getStatus());
     }
 }
